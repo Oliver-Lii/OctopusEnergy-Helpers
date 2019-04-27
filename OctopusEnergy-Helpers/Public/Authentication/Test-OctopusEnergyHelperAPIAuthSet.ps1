@@ -5,7 +5,7 @@
 .OUTPUTS
    Returns a boolean value
 .EXAMPLE
-   Test-OctopusEnergyHelperAPIAuthSet 
+   Test-OctopusEnergyHelperAPIAuthSet
 .FUNCTIONALITY
    Returns a boolean value depending on whether OctopusEnergy API Credentials have been set
 
