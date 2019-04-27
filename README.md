@@ -1,4 +1,4 @@
-# OctopusEnergy-Helpers [![Build status](https://ci.appveyor.com/api/projects/status/xmaf7jtlgayb444o/branch/master?svg=true)](https://ci.appveyor.com/project/Oliver-Lii/OctopusEnergy-Helpers/branch/master) [![GitHub license](https://img.shields.io/github/license/Oliver-Lii/OctopusEnergy-Helpers.svg)](LICENSE) [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/OctopusEnergy-Helpers.svg)]()
+# OctopusEnergy-Helpers [![Build status](https://ci.appveyor.com/api/projects/status/8pysopaejmlno2ly/branch/master?svg=true)](https://ci.appveyor.com/project/Oliver-Lii/OctopusEnergy-Helpers/branch/master) [![GitHub license](https://img.shields.io/github/license/Oliver-Lii/OctopusEnergy-Helpers.svg)](LICENSE) [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/OctopusEnergy-Helpers.svg)]()
 
 
 This module was written to assist working with [Octopus Energy API](https://developer.octopus.energy/docs/api/ "Octopus Energy API Docs") endpoints available to customers. Additional functionality may be added later and I will use this as a generic module to house Powershell functions specific to working with Octopus Energy API.
