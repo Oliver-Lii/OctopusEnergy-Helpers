@@ -108,14 +108,12 @@ function Get-OctopusEnergyHelperConsumption
        }
        elseif($var.value -or $var.value -eq 0)
        {
-          $value = $var.value
-          If($value.GetType().Name -eq "DateTime")
-          {
-            $value = ($value | Get-date -format "s").tostring()
-          }
+         $value = $var.value
          $psParams.Add($var.name,$value)
        }
    }
+
+   $apiParams = $psParams | ConvertTo-OctopusEnergyHelperAPIParam
 
    $requestParams = @{
       Credential = $Credential
@@ -123,7 +121,7 @@ function Get-OctopusEnergyHelperConsumption
       UseBasicParsing = $true
       method = "Get"
       ContentType = "application/x-www-form-urlencoded"
-      body = $psParams
+      body = $apiParams
   }
    if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Consumption") )
    {

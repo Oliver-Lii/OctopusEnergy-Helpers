@@ -48,27 +48,29 @@ function Get-OctopusEnergyHelperEnergyProductList
 
    $psParams = @{}
    $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
+   $ParamsToIgnore = @("Credential")
    foreach ($key in $ParameterList.keys)
    {
-       $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;
-      if($var.value -or $var.value -eq 0)
+      $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;
+      if($ParamsToIgnore -contains $var.Name)
+      {
+          continue
+      }
+      elseif($var.value -or $var.value -eq 0)
       {
          $value = $var.value
-         If($value.GetType().Name -eq "DateTime")
-         {
-            $value = ($value | Get-date -format "s").tostring()
-         }
          $psParams.Add($var.name,$value)
       }
    }
 
+   $apiParams = $psParams | ConvertTo-OctopusEnergyHelperAPIParam
    $requestParams = @{
       Credential = $Credential
       uri = $requestURL
       UseBasicParsing = $true
       method = "Get"
       ContentType = "application/x-www-form-urlencoded"
-      body = $psParams
+      body = $apiParams
   }
    if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Product List") )
    {
