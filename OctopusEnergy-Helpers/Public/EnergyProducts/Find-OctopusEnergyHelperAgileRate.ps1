@@ -11,19 +11,29 @@
    The GSP of the electricity meter point
 .PARAMETER mpan
    The mpan of the electricity meter
+.PARAMETER period_from
+   Search through rates from the given datetime (inclusive).
+.PARAMETER period_to
+   Search through rates to the given datetime (exclusive).
 .INPUTS
    None
 .OUTPUTS
    Returns a list of rates which meet the desired duration
 .EXAMPLE
    Get-OctopusEnergyHelperEnergyProductTariff -duration (New-TimeSpan -hours 2 -minutes 30) -target "lowest" -mpan 123456789012
+.EXAMPLE
+   Get-OctopusEnergyHelperEnergyProductTariff -duration (New-TimeSpan -hours 2 -minutes 30) -target "highest" -gsp A
+.EXAMPLE
+   $fromDate = Get-Date 21:00
+   Get-OctopusEnergyHelperEnergyProductTariff -duration (New-TimeSpan -hours 2 -minutes 30) -target "lowest" -gsp A -period_from $fromDate
 .FUNCTIONALITY
-   Retrieves rates which meet the target for the specified duration. E.g Find the time period which has the lowest total rate over a 2 1/2 hours period
+   Retrieves Agile Octopus rates which meet the target for the specified duration. E.g Find the time period which has the lowest total rate over a 2 1/2 hours period.
 #>
 
 function Find-OctopusEnergyHelperAgileRate
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
+   [OutputType([System.Collections.Generic.List[PSObject]])]
    Param(
       [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
 
@@ -42,16 +52,37 @@ function Find-OctopusEnergyHelperAgileRate
 
       [Parameter(Mandatory=$true,ParameterSetName='MPAN')]
       [ValidateNotNullOrEmpty()]
-      [string]$mpan
+      [string]$mpan,
+
+      [Parameter(ParameterSetName='GSPCode')]
+      [Parameter(ParameterSetName='MPAN')]
+      [datetime]$period_from = $((Get-Date)),
+
+      [Parameter(ParameterSetName='GSPCode')]
+      [Parameter(ParameterSetName='MPAN')]
+      [datetime]$period_to
    )
 
    if($mpan)
    {
-      $meterPoint = Get-OctopusEnergyHelperMeterPoint -mpan $mpan
+      if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Meter Point Information") )
+      {
+         $meterPoint = Get-OctopusEnergyHelperMeterPoint -mpan $mpan
+      }
       $gsp = $meterPoint.gsp -replace "_",""
    }
 
-   $tariffs = Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-$gsp" -period_from $((Get-Date))
+   $tariffParams = @{
+      tariff_code = "E-1R-AGILE-18-02-21-$gsp"
+      period_from = $period_from
+   }
+
+   if($period_to){$tariffParams.Add("period_to",$period_to)}
+
+   if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Agile Octopus Tariff Data") )
+   {
+      $tariffs = Get-OctopusEnergyHelperEnergyProductTariff @tariffParams
+   }
    $rates= $tariffs.'standard-unit-rates'
 
    $dataPoints = [int]$duration.TotalHours * 2
