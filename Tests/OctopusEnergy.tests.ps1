@@ -60,7 +60,7 @@ Describe "Octopus Energy Product Functions" {
 
     It "Get-OctopusEnergyHelperEnergyProductList retrieves list of all products"{
         $results = Get-OctopusEnergyHelperEnergyProductList
-        $results.count | Should BeGreaterThan 0
+        $results.count | Should -BeGreaterThan 0
     }
 
     It "Get-OctopusEnergyHelperEnergyProductList retrieves list of all variable products"{
@@ -78,6 +78,18 @@ Describe "Octopus Energy Product Functions" {
     It "Get-OctopusEnergyHelperEnergyProduct retrieves details about a product"{
         $result = Get-OctopusEnergyHelperEnergyProduct -product_code "GO-18-06-12"
         $result.full_name | Should -Be "Octopus Go June 2018"
+    }
+
+    It "Get-OctopusEnergyHelperEnergyProduct retrieves details about a product by display name"{
+        $result = Get-OctopusEnergyHelperEnergyProduct -display_name @("Flexible Octopus", "Super Green Octopus")
+        $result.display_name | Should -Contain "Flexible Octopus"
+        $result.display_name | Should -Contain "Super Green Octopus"
+        $result.count | Should -Be 2
+    }
+
+    It "Get-OctopusEnergyHelperEnergyProduct retrieves details about all products"{
+        $result = Get-OctopusEnergyHelperEnergyProduct
+        $result.count | Should -BeGreaterThan 8
     }
 
     It "Get-OctopusEnergyHelperEnergyProductTariff retrieves details about a single rate electricity product tariff"{
@@ -112,7 +124,7 @@ Describe "Octopus Energy Product Functions" {
     {
         It "Find-OctopusEnergyHelperAgileRate find the time period with lowest charges via the MPAN"{
             $result = Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 2) -mpan $config.mpan -target lowest
-            $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeLessThan 28
+            $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeLessThan 40
         }
     }
 }
