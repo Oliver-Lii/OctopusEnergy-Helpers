@@ -2,6 +2,8 @@
 <#
 .Synopsis
    Retrieves the list of energy products
+.PARAMETER apikey
+   The Octopus Energy API Key
 .PARAMETER is_variable
    Show only variable products
 .PARAMETER is_green
@@ -30,7 +32,7 @@ function Get-OctopusEnergyHelperEnergyProductList
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [switch]$is_variable,
 
@@ -44,11 +46,13 @@ function Get-OctopusEnergyHelperEnergyProductList
 
       [datetime]$available_at
    )
+   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
    $requestURL = Get-OctopusEnergyHelperBaseURL -endpoint products
 
    $psParams = @{}
    $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("Credential")
+   $ParamsToIgnore = @("apikey")
    foreach ($key in $ParameterList.keys)
    {
       $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;

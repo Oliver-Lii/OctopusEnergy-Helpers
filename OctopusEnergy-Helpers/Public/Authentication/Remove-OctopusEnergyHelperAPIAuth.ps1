@@ -13,10 +13,12 @@
 function Remove-OctopusEnergyHelperAPIAuth
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
+   [OutputType([System.Boolean])]
    Param()
     Try
     {
-        Remove-Variable -Name OctopusEnergyHelperCredentials -Scope Global -ErrorAction Stop
+         $moduleName = (Get-Command $MyInvocation.MyCommand.Name).Source
+         Remove-Item "$env:userprofile\$moduleName\$moduleName-Credentials.xml" -Force
     }
     Catch
     {

@@ -1,8 +1,8 @@
 <#
 .Synopsis
    Retrieves the tariffs of an energy product
-.PARAMETER Credential
-   Credentials for Octopus Energy API
+.PARAMETER apikey
+   The Octopus Energy API Key
 .PARAMETER tariff_code
    The code of the tariff to be retrieved.
 .PARAMETER tariffs_active_at
@@ -25,7 +25,7 @@ function Get-OctopusEnergyHelperEnergyProductTariff
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
@@ -39,6 +39,9 @@ function Get-OctopusEnergyHelperEnergyProductTariff
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
       [datetime]$period_to
    )
+   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
+
    $URL = Get-OctopusEnergyHelperBaseURL -endpoint products
 
    $rates = [System.Collections.Generic.List[String]]@("standing-charges","standard-unit-rates")
@@ -68,7 +71,7 @@ function Get-OctopusEnergyHelperEnergyProductTariff
 
    $psParams = @{}
    $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("Credential","product_code","tariff_code","type")
+   $ParamsToIgnore = @("apikey","product_code","tariff_code","type")
    foreach ($key in $ParameterList.keys)
    {
        $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;

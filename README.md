@@ -18,11 +18,8 @@ Install-Module OctopusEnergy-Helpers -Repository PSGallery
 
 ```powershell
 # Configure Octopus Energy API key
-$apiKey = "OctopusEnergyAPIKey"
-# API key is read from the username value only and password is not used
-$oeAPIKey = ConvertTo-SecureString "NotUsed" -AsPlainText -Force 
-$oeCredentials = New-Object System.Management.Automation.PSCredential ($apiKey, $oeAPIKey)
-Set-OctopusEnergyHelperAPIAuth -Credential $oeCredentials | Out-Null
+$apiKey = Read-Host "Enter the Octopus Energy API key" -AsSecureString
+Set-OctopusEnergyHelperAPIAuth -ApiKey $apiKey
 
 # Retrieve the list of active products
 $oeProductList = Get-OctopusEnergyHelperEnergyProductList

@@ -2,6 +2,8 @@
 <#
 .Synopsis
    Retrieves the meter point for a Octopus Energy electricity meter
+.PARAMETER apikey
+   The Octopus Energy API Key
 .PARAMETER mpan
    The mpan of the electricity meter
 .INPUTS
@@ -9,7 +11,7 @@
 .OUTPUTS
    Returns a PSCustomObject with details of the meter point
 .EXAMPLE
-   Get-OctopusEnergyHelperMeterPoint -mpan 1234567890   
+   Get-OctopusEnergyHelperMeterPoint -mpan 1234567890
 .FUNCTIONALITY
    Returns the meter point for a Octopus Energy electricity meter
 
@@ -18,12 +20,15 @@ function Get-OctopusEnergyHelperMeterPoint
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true)]
       [ValidateNotNullOrEmpty()]
       [string]$mpan
    )
+
+   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
 
    if($mpan)
    {
