@@ -5,19 +5,18 @@
 .EXAMPLE
    Get-OctopusEnergyHelperAPIAuth
 .OUTPUTS
-   Returns a credential object containing the OctopusEnergy API Key
+   Returns a securestring containing the OctopusEnergy API Key
 .FUNCTIONALITY
-   Returns a credential object containing the OctopusEnergy API Key
+   Returns a securestring object containing the OctopusEnergy API Key
 
 #>
 function Get-OctopusEnergyHelperAPIAuth
 {
-    if(Test-OctopusEnergyHelperAPIAuthSet)
-    {
-        Return $Global:OctopusEnergyHelperCredentials
-    }
-    else
-    {
-        Return
-    }
+   $moduleName = (Get-Command $MyInvocation.MyCommand.Name).Source
+   if(Test-OctopusEnergyHelperAPIAuthSet)
+   {
+      $ApiKey = Import-CliXml -Path "$env:userprofile\$moduleName\$moduleName-Credentials.xml"
+   }
+
+   Return $ApiKey
 }

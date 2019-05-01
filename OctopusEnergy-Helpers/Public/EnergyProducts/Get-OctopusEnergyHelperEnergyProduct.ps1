@@ -2,6 +2,8 @@
 <#
 .Synopsis
    Retrieves the details of an energy product
+.PARAMETER apikey
+   The Octopus Energy API Key
 .PARAMETER product_code
    The code of the product to be retrieved.
 .PARAMETER tariffs_active_at
@@ -27,7 +29,7 @@ function Get-OctopusEnergyHelperEnergyProduct
    [CmdletBinding(SupportsShouldProcess=$true,DefaultParameterSetName='all')]
    [OutputType([System.Collections.Generic.List[PSObject]])]
    Param(
-      [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='ByFullName')]
       [ValidateNotNullOrEmpty()]
@@ -46,13 +48,16 @@ function Get-OctopusEnergyHelperEnergyProduct
       [Parameter(ParameterSetName='ByProductCode')]
       [datetime]$tariffs_active_at
    )
+   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
+
    $URL = Get-OctopusEnergyHelperBaseURL -endpoint products
 
    If($PSCmdlet.ParameterSetName -ne "ByProductCode")
    {
       if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Product List") )
       {
-         $oeProductList = Get-OctopusEnergyHelperEnergyProductList -Credential $Credential
+         $oeProductList = Get-OctopusEnergyHelperEnergyProductList -ApiKey $ApiKey
       }
 
       Switch($PSCmdlet.ParameterSetName)
@@ -71,7 +76,7 @@ function Get-OctopusEnergyHelperEnergyProduct
 
    $psParams = @{}
    $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("Credential","product_code","display_name","product_code","full_name")
+   $ParamsToIgnore = @("apikey","product_code","display_name","product_code","full_name")
    foreach ($key in $ParameterList.keys)
    {
       $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;

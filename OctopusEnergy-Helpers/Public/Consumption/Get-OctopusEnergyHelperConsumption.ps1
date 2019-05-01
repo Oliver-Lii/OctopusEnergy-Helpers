@@ -1,6 +1,8 @@
 <#
 .Synopsis
    Retrieves the consumption for a smart gas or electricity meter
+.PARAMETER apikey
+   The Octopus Energy API Key
 .PARAMETER mpan
    The mpan of the electricity meter
 .PARAMETER mprn
@@ -31,7 +33,7 @@ function Get-OctopusEnergyHelperConsumption
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$true,ParameterSetName='InclusiveDateRange')]
@@ -85,6 +87,9 @@ function Get-OctopusEnergyHelperConsumption
       [string]$group_by
    )
 
+   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (new-object System.Security.SecureString))
+
    if($mpan)
    {
       $URL = Get-OctopusEnergyHelperBaseURL -endpoint elecmp
@@ -98,7 +103,7 @@ function Get-OctopusEnergyHelperConsumption
 
    $psParams = @{}
    $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("mpan","mprn","serial_number")
+   $ParamsToIgnore = @("apikey","mpan","mprn","serial_number")
    foreach ($key in $ParameterList.keys)
    {
        $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;

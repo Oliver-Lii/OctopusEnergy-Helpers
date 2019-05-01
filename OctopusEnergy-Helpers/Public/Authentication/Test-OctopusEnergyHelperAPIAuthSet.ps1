@@ -7,17 +7,11 @@
 .EXAMPLE
    Test-OctopusEnergyHelperAPIAuthSet
 .FUNCTIONALITY
-   Returns a boolean value depending on whether OctopusEnergy API Credentials have been set
+   Returns a boolean value depending on whether OctopusEnergy API key has been set
 
 #>
 function Test-OctopusEnergyHelperAPIAuthSet
 {
-    If($Global:OctopusEnergyHelperCredentials)
-    {
-        Return $true
-    }
-    else
-    {
-        Return $false
-    }
+   $moduleName = (Get-Command $MyInvocation.MyCommand.Name).Source
+   Return (Test-Path "$env:userprofile\$moduleName\$moduleName-Credentials.xml" -PathType Leaf)
 }

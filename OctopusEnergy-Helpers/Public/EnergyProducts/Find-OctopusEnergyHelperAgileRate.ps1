@@ -1,8 +1,8 @@
 <#
 .Synopsis
    Find the desired target rate for the specified period of time under the Agile Octopus tariff
-.PARAMETER Credential
-   Credentials for Octopus Energy API
+.PARAMETER apikey
+   The Octopus Energy API Key
 .PARAMETER timespan
    The period of time which should be tracked
 .PARAMETER target
@@ -35,7 +35,7 @@ function Find-OctopusEnergyHelperAgileRate
    [CmdletBinding(SupportsShouldProcess=$true)]
    [OutputType([System.Collections.Generic.List[PSObject]])]
    Param(
-      [System.Management.Automation.PSCredential]$Credential=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='GSPCode')]
       [Parameter(Mandatory=$true,ParameterSetName='MPAN')]
@@ -67,12 +67,13 @@ function Find-OctopusEnergyHelperAgileRate
    {
       if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Meter Point Information") )
       {
-         $meterPoint = Get-OctopusEnergyHelperMeterPoint -mpan $mpan
+         $meterPoint = Get-OctopusEnergyHelperMeterPoint -mpan $mpan -ApiKey $ApiKey
       }
       $gsp = $meterPoint.gsp -replace "_",""
    }
 
    $tariffParams = @{
+      ApiKey = $ApiKey
       tariff_code = "E-1R-AGILE-18-02-21-$gsp"
       period_from = $period_from
    }

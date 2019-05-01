@@ -1,12 +1,12 @@
 <#
 .Synopsis
-   Sets the Octopus Energy API Key used by the module
-.PARAMETER Credential
-    Credential object containing the API Key in the username property
+    Sets the Octopus Energy API Key used by the module
+.PARAMETER APIKey
+    SecureString containing the API Key
 .INPUTS
-   None
+    None
 .EXAMPLE
-   Set-OctopusEnergyHelperAPIAuth -Credential <Credential>
+    Set-OctopusEnergyHelperAPIAuth -ApiKey <SecureString>
 .FUNCTIONALITY
     Sets the Octopus Energy API Key used by the module
 
@@ -14,15 +14,21 @@
 function Set-OctopusEnergyHelperAPIAuth
 {
     [CmdletBinding(PositionalBinding=$false,SupportsShouldProcess=$true)]
+    [OutputType([System.Boolean])]
     Param(
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential] $Credential
+        [securestring] $ApiKey
     )
 
     Try
     {
-        New-Variable -Name OctopusEnergyHelperCredentials -Value $Credential -Scope Global -Force -ErrorAction Stop
+        $moduleName = (Get-Command $MyInvocation.MyCommand.Name).Source
+        If(! (Test-Path "$env:userprofile\$moduleName\"))
+        {
+            New-Item "$env:userprofile\$moduleName" -ItemType Directory | Out-Null
+        }
+        $ApiKey | Export-CliXml -Path "$env:userprofile\$moduleName\$moduleName-Credentials.xml"
     }
     Catch
     {
@@ -32,4 +38,3 @@ function Set-OctopusEnergyHelperAPIAuth
 
     Return $true
 }
-

@@ -10,16 +10,13 @@ if(Test-Path $DefaultsFile)
     # Prompt for credentials
     $config = @{
         ApiKey = if($defaults.ApiKey){$defaults.ApiKey}else{Read-Host "ApiKey"}
-        PSRequired = " "
         Mpan = if($defaults.Mpan){$defaults.Mpan}else{Read-Host "Electricity Meter Mpan"}
         ElecSerialNo = if($defaults.ElecSerialNo){$defaults.ElecSerialNo}else{Read-Host "Electricity Meter Serial Number"}
         Mprn = if($defaults.Mprn){$defaults.Mprn}else{Read-Host "Gas Meter Mprn"}
         GasSerialNo = if($defaults.ElecSerialNo){$defaults.GasSerialNo}else{Read-Host "Gas Meter Serial Number"}
     }
-
-    $PSRequired = ConvertTo-SecureString $config.PSRequired -AsPlainText -Force
-    $credential = New-Object System.Management.Automation.PSCredential ($config.ApiKey, $PSRequired)
-    Set-OctopusEnergyHelperAPIAuth -Credential $credential | Out-Null
+    $oeAPIKey = ConvertTo-SecureString $config.ApiKey -AsPlainText -Force
+    Set-OctopusEnergyHelperAPIAuth -ApiKey $oeAPIKey | Out-Null
 }
 else
 {
@@ -116,12 +113,12 @@ Describe "Octopus Energy Product Functions" {
         $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeGreaterThan 80
     }
 
-    It "Find-OctopusEnergyHelperAgileRate should throw an error if the duration exceed the number of rates available"{
-        {Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 50) -mpan $config.mpan -target lowest} | Should -Throw "Duration greater than the number of available rates"
-    }
-
     If($config.mpan)
     {
+        It "Find-OctopusEnergyHelperAgileRate should throw an error if the duration exceed the number of rates available"{
+            {Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 50) -mpan $config.mpan -target lowest} | Should -Throw "Duration greater than the number of available rates"
+        }
+
         It "Find-OctopusEnergyHelperAgileRate find the time period with lowest charges via the MPAN"{
             $result = Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 2) -mpan $config.mpan -target lowest
             $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeLessThan 40
