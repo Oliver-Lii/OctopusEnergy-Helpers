@@ -32,7 +32,7 @@
 
 function Find-OctopusEnergyHelperAgileRate
 {
-   [CmdletBinding(SupportsShouldProcess=$true)]
+   [CmdletBinding(SupportsShouldProcess=$true,DefaultParameterSetName='MPAN')]
    [OutputType([System.Collections.Generic.List[PSObject]])]
    Param(
       [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
@@ -50,9 +50,9 @@ function Find-OctopusEnergyHelperAgileRate
       [ValidateSet("A","B","C","D","E","F","G","H","J","K","L","M","N","P")]
       [string]$gsp,
 
-      [Parameter(Mandatory=$true,ParameterSetName='MPAN')]
+      [Parameter(Mandatory=$false,ParameterSetName='MPAN')]
       [ValidateNotNullOrEmpty()]
-      [string]$mpan,
+      [string]$mpan = (Get-OctopusEnergyHelperConfig -property mpan),
 
       [Parameter(ParameterSetName='GSPCode')]
       [Parameter(ParameterSetName='MPAN')]

@@ -1,55 +1,39 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ModuleRoot = "$here\..\octopusenergy-helpers"
-$DefaultsFile = "$here\octopusenergy-helpers.Pester.Defaults.json"
 
-if(Test-Path $DefaultsFile)
+if(! (Test-OctopusEnergyHelperAPIAuthSet))
 {
-    $defaults=@{}
-    (Get-Content $DefaultsFile | Out-String | ConvertFrom-Json).psobject.properties | ForEach-Object{$defaults."$($_.Name)" = $_.Value}
+    $apiKey = Read-Host "Octopus Energy API key" -AsSecureString
+    Set-OctopusEnergyHelperAPIAuth -ApiKey $apiKey | Out-Null
+}
 
-    # Prompt for credentials
-    $config = @{
-        ApiKey = if($defaults.ApiKey){$defaults.ApiKey}else{Read-Host "ApiKey"}
-        Mpan = if($defaults.Mpan){$defaults.Mpan}else{Read-Host "Electricity Meter Mpan"}
-        ElecSerialNo = if($defaults.ElecSerialNo){$defaults.ElecSerialNo}else{Read-Host "Electricity Meter Serial Number"}
-        Mprn = if($defaults.Mprn){$defaults.Mprn}else{Read-Host "Gas Meter Mprn"}
-        GasSerialNo = if($defaults.ElecSerialNo){$defaults.GasSerialNo}else{Read-Host "Gas Meter Serial Number"}
+if(! (Test-OctopusEnergyHelperConfigSet))
+{
+    $configProperties = [ordered]@{"mpan"="Electricity Meter Mpan";"elec_serial_number"="Electricity Meter Serial Number";"mprn"="Gas Meter Mprn";"gas_serial_number"="Gas Meter Serial Number"}
+
+    $cfgProps = @{}
+    foreach($property in $configProperties.GetEnumerator())
+    {
+        $value = Read-Host $property.value
+        $cfgProps.Add($property.key,$value)
     }
-    $oeAPIKey = ConvertTo-SecureString $config.ApiKey -AsPlainText -Force
-    Set-OctopusEnergyHelperAPIAuth -ApiKey $oeAPIKey | Out-Null
+    Set-OctopusEnergyHelperConfig @cfgProps | Out-Null
 }
 else
 {
-    Write-Error "$DefaultsFile does not exist. Created example file. Please populate with your values";
-
-    # Write example file
-    @{
-        ApiKey = "OctopusEnergyAPIKey";
-        Mpan = "MPANOfElectricityMeter"
-        ElecSerialNo = "SerialNumberOfElectricityMeter"
-        Mprn = "MPRNOfGasMeter"
-        GasSerialNo = "SerialNumberOfGasMeter"
-
-    } | ConvertTo-Json | Set-Content $DefaultsFile
-    return;
+    $config = Get-OctopusEnergyHelperConfig
 }
 
 Describe "Octopus Energy Consumption Meter Readings Functions" {
 
-    If($config.mpan)
-    {
-        It "Get-OctopusEnergyHelperConsumption retrieves all electricty meter readings in the last 24 hours" {
-            $results = Get-OctopusEnergyHelperConsumption -mpan $config.mpan -serial_number $config.ElecSerialNo -period_from $((Get-Date).AddDays(-1))
-            $results.count | Should BeGreaterOrEqual 0
-        }
+    It "Get-OctopusEnergyHelperConsumption retrieves all electricty meter readings in the last 24 hours" {
+        $results = Get-OctopusEnergyHelperConsumption -mpan $config["mpan"] -serial_number $config["elec_serial_number"] -period_from $((Get-Date).AddDays(-1))
+        $results.count | Should BeGreaterOrEqual 0
     }
 
-    If($config.mprn)
-    {
-        It "Get-OctopusEnergyHelperConsumption retrieves all gas meter readings in the last 24 hours" {
-            $results = Get-OctopusEnergyHelperConsumption -mprn $config.mprn -serial_number $config.GasSerialNo -period_from $((Get-Date).AddDays(-1))
-            $results.count | Should BeGreaterOrEqual 0
-        }
+    It "Get-OctopusEnergyHelperConsumption retrieves all gas meter readings in the last 24 hours" {
+        $results = Get-OctopusEnergyHelperConsumption -mprn $config["mprn"] -serial_number $config["gas_serial_number"] -period_from $((Get-Date).AddDays(-1))
+        $results.count | Should BeGreaterOrEqual 0
     }
 }
 
@@ -113,26 +97,21 @@ Describe "Octopus Energy Product Functions" {
         $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeGreaterThan 80
     }
 
-    If($config.mpan)
-    {
-        It "Find-OctopusEnergyHelperAgileRate should throw an error if the duration exceed the number of rates available"{
-            {Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 50) -mpan $config.mpan -target lowest} | Should -Throw "Duration greater than the number of available rates"
-        }
+    It "Find-OctopusEnergyHelperAgileRate should throw an error if the duration exceed the number of rates available"{
+        {Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 50) -mpan $config["mpan"] -target lowest} | Should -Throw "Duration greater than the number of available rates"
+    }
 
-        It "Find-OctopusEnergyHelperAgileRate find the time period with lowest charges via the MPAN"{
-            $result = Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 2) -mpan $config.mpan -target lowest
-            $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeLessThan 40
-        }
+    It "Find-OctopusEnergyHelperAgileRate find the time period with lowest charges via the MPAN"{
+        $result = Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -Hours 2) -mpan $config["mpan"] -target lowest
+        $result."value_exc_vat" | Measure-Object -Sum | Select-Object -ExpandProperty Sum | Should -BeLessThan 40
     }
 }
 
 Describe "Octopus Energy Meter Point Functions" {
-    If($config.mpan)
-    {
-        It "Get-OctopusEnergyHelperMeterPoint retrieves details of a electricity meter point"{
-            $result = Get-OctopusEnergyHelperMeterPoint -mpan $config.mpan
-            $result.mpan | Should Be $config.mpan
-        }
+
+    It "Get-OctopusEnergyHelperMeterPoint retrieves details of a electricity meter point"{
+        $result = Get-OctopusEnergyHelperMeterPoint -mpan $config["mpan"]
+        $result.mpan | Should Be $config["mpan"]
     }
 
 }
