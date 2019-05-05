@@ -22,9 +22,8 @@ function Get-OctopusEnergyHelperMeterPoint
    Param(
       [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
 
-      [Parameter(Mandatory=$true)]
       [ValidateNotNullOrEmpty()]
-      [string]$mpan
+      [string]$mpan = (Get-OctopusEnergyHelperConfig -property mpan)
    )
 
    $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password

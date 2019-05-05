@@ -21,6 +21,16 @@ Install-Module OctopusEnergy-Helpers -Repository PSGallery
 $apiKey = Read-Host "Enter the Octopus Energy API key" -AsSecureString
 Set-OctopusEnergyHelperAPIAuth -ApiKey $apiKey
 
+# Set up the configuration for Octopus Energy module
+$configProperties = [ordered]@{"mpan"="Enter the electricity meter MPAN";"elec_serial_number"="Enter the electricity meter serial number";"mprn"="Enter the gas meter MPRN";"gas_serial_number"="Enter the gas meter serial number"}
+$cfgProps = @{}
+foreach($property in $configProperties.GetEnumerator())
+{
+    $value = Read-Host $property.value
+    $cfgProps.Add($property.key,$value)
+}
+Set-OctopusEnergyHelperConfig @cfgProps
+
 # Retrieve the list of active products
 $oeProductList = Get-OctopusEnergyHelperEnergyProductList
 
@@ -50,6 +60,12 @@ Below is a list of the available functions in the module
 *  Remove-OctopusEnergyHelperBaseURL
 *  Set-OctopusEnergyHelperBaseURL
 *  Test-OctopusEnergyHelperBaseURLSet
+
+[Config](https://github.com/Oliver-Lii/octopusenergy-helpers/tree/master/OctopusEnergy-Helpers/Public/Config "Octopus Energy Helper Config")
+*  Get-OctopusEnergyHelperConfig
+*  Remove-OctopusEnergyHelperConfig
+*  Set-OctopusEnergyHelperConfig
+*  Test-OctopusEnergyHelperConfigSet
 
 [Consumption](https://github.com/Oliver-Lii/octopusenergy-helpers/tree/master/OctopusEnergy-Helpers/Public/Consumption "Octopus Energy Consumption")
 *  Get-OctopusEnergyHelperConsumption
