@@ -16,7 +16,7 @@
 .OUTPUTS
    Returns a PSCustom object with tariffs of an energy product
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProductTariff -product_code "AGILE-18-02-21" -tariff_code "E-1R-AGILE-18-02-21-C"
+   Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-C" -period_from (Get-Date)
 .FUNCTIONALITY
    Retrieves the tarffis of an energy product
 
