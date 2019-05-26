@@ -1,0 +1,5 @@
+<style>
+TABLE {border-width: 1px; border-style: solid; border-color: #DDDDDD; border-collapse: collapse; font-family: arial, san-serif;}
+TH {border-width: 1px; padding: 6px; border-style: solid; border-color: black; background-color: #6495ED; font-family: arial, san-serif;}
+TD {border-width: 1px; padding: 6px; border-style: solid; border-color: black; text-aligh: center; font-family: arial, san-serif;}
+</style>

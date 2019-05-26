@@ -44,6 +44,10 @@ $times = Find-OctopusEnergyHelperAgileRate -duration $(New-TimeSpan -hours 2) -m
 $tariffs = Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-A"
 $average = ($tariffs.'standard-unit-rates' | Measure-object -Property value_exc_vat -Average).Average
 $belowAverage = $tariffs.'standard-unit-rates' | Where-Object {$_.value_exc_vat -le $average}
+
+# Create a HTML page displaying the rates lower than 11p per KwH
+$agileRates = Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-A" -period_from (Get-Date) -Verbose
+($agileRates).'standard-unit-rates' | ConvertTo-OctopusEnergyHelperRateHTML -TargetRate 11 -Highlight Lower | Out-File .\AgileRate.html
 ```
 
 ## Functions
@@ -71,6 +75,7 @@ Below is a list of the available functions in the module
 *  Get-OctopusEnergyHelperConsumption
 
 [EnergyProducts](https://github.com/Oliver-Lii/octopusenergy-helpers/tree/master/OctopusEnergy-Helpers/Public/EnergyProducts "Octopus Energy Products")
+*  ConvertTo-OctopusEnergyHelperRateHTML
 *  Find-OctopusEnergyHelperAgileRate
 *  Get-OctopusEnergyHelperEnergyProduct
 *  Get-OctopusEnergyHelperEnergyProductList

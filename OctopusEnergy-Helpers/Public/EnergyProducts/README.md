@@ -2,6 +2,14 @@
 
 The following are the module functions which work with the product API endpoint
 
+### ConvertTo-OctopusEnergyHelperRateHTML
+This cmdlet can be used create a HTML page with the supplied rates. A rate to be highlighted on the HTML page can be specified along with the desired set of values to highlight.
+
+```powershell
+$agileRates = Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-A" -period_from (Get-Date)
+($agileRates).'standard-unit-rates' | ConvertTo-OctopusEnergyHelperRateHTML -TargetRate 11 -Highlight Lower | Out-File .\AgileRate.html
+```
+
 ### Find-OctopusEnergyHelperAgileRate
 This cmdlet can be used to retrieve a desired target rate over a specified duration. E.g. Lowest rate in a continuous two hour block.
 
