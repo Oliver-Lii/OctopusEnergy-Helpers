@@ -8,7 +8,7 @@
 .OUTPUTS
    List containing all the results for a given request
 .EXAMPLE
-   Get-OctopusEnergyHelperResponse -requestParams $requestParams 
+   Get-OctopusEnergyHelperResponse -requestParams $requestParams
 .FUNCTIONALITY
    Collates the results from the responses
 
@@ -36,7 +36,7 @@ Function Get-OctopusEnergyHelperResponse
       }
       if($response.next)
       {
-         $response = Invoke-RestMethod -uri $response.next
+         $response = Invoke-RestMethod -uri $response.next -Credential $requestParams["Credential"] -UseBasicParsing
       }
    }while($response.next)
 
