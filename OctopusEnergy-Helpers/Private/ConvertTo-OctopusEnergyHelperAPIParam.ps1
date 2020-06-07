@@ -1,13 +1,16 @@
 
 <#
-.Synopsis
+.SYNOPSIS
     Converts a hashtable of parameters to the format expected by the Octopus Energy API
+.DESCRIPTION
+    Converts a hashtable of parameters to the format expected by the Octopus Energy API.
+.PARAMETER InputObject
+    Hashtable containing the values to pass to the API
 .EXAMPLE
-    $hashtable | ConvertTo-OctopusEnergyHelperAPIParam
+    C:\PS>$hashtable | ConvertTo-OctopusEnergyHelperAPIParam
+    Convert the $hashtable into a values expected by API
 .INPUTS
     InputObject - Hashtable containing the values to pass to the Octopus Energy API
-.FUNCTIONALITY
-    Converts a hashtable of parameters to the format expected by the Octopus Energy API
 #>
 function ConvertTo-OctopusEnergyHelperAPIParam
 {

@@ -1,15 +1,15 @@
 <#
-.Synopsis
+.SYNOPSIS
+    Sets the Octopus Energy API Key used by the module
+.DESCRIPTION
     Sets the Octopus Energy API Key used by the module
 .PARAMETER APIKey
     SecureString containing the API Key
 .INPUTS
     None
 .EXAMPLE
-    Set-OctopusEnergyHelperAPIAuth -ApiKey <SecureString>
-.FUNCTIONALITY
-    Sets the Octopus Energy API Key used by the module
-
+    C:\PS>Set-OctopusEnergyHelperAPIAuth -APIKey $SecureStringOctopusEnergyAPIKey
+    Set the API authentication credential file
 #>
 function Set-OctopusEnergyHelperAPIAuth
 {
@@ -18,7 +18,7 @@ function Set-OctopusEnergyHelperAPIAuth
     Param(
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [securestring] $ApiKey
+        [securestring] $APIKey
     )
 
     Try

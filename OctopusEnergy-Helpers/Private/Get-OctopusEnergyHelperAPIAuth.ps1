@@ -1,14 +1,16 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Gets the Octopus Energy Module API Key
+.DESCRIPTION
+   Returns a securestring object containing the OctopusEnergy API Key
+.PARAMETER InputObject
+   Hashtable containing the values to pass to the API
 .EXAMPLE
-   Get-OctopusEnergyHelperAPIAuth
+   C:\PS>Get-OctopusEnergyHelperAPIAuth
+   Retrieve the Octopus Energy API authentication key
 .OUTPUTS
    Returns a securestring containing the OctopusEnergy API Key
-.FUNCTIONALITY
-   Returns a securestring object containing the OctopusEnergy API Key
-
 #>
 function Get-OctopusEnergyHelperAPIAuth
 {

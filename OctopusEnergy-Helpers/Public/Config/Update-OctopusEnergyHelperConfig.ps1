@@ -1,6 +1,8 @@
 <#
-.Synopsis
+.SYNOPSIS
     Updates the Octopus Energy config file used by the module.
+.DESCRIPTION
+    Updates the configuration in the Octopus Energy helper config file used by the module
 .PARAMETER mpan
    The mpan of the electricity meter
 .PARAMETER mprn
@@ -14,10 +16,8 @@
 .OUTPUTS
     None
 .EXAMPLE
-    Update-OctopusEnergyHelperConfig -mpan "987654321"
-.FUNCTIONALITY
-    Updates the configuration in the Octopus Energy helper config file used by the module
-
+    C:\PS>Update-OctopusEnergyHelperConfig -mpan "987654321"
+    Update the MPAN stored in the configuration to 987654321
 #>
 function Update-OctopusEnergyHelperConfig
 {

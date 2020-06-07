@@ -1,6 +1,8 @@
 
 <#
-.Synopsis
+.SYNOPSIS
+   Retrieves the list of energy products
+.DESCRIPTION
    Retrieves the list of energy products
 .PARAMETER apikey
    The Octopus Energy API Key
@@ -21,12 +23,14 @@
 .OUTPUTS
    Returns a object with details of the energy products
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProductList
+   C:\PS>Get-OctopusEnergyHelperEnergyProductList
+   Retrieve all energy products
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProductList -is_variable
-.FUNCTIONALITY
-   Retrieves the list of energy products
-
+   C:\PS>Get-OctopusEnergyHelperEnergyProductList -available_at $((Get-Date).AddMonths(-1))
+   Retrieve all energy products which are available in the last month
+.EXAMPLE
+   C:\PS>Get-OctopusEnergyHelperEnergyProductList -is_variable
+   Retrieve all energy products which are variable rate only
 #>
 function Get-OctopusEnergyHelperEnergyProductList
 {

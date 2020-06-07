@@ -1,5 +1,7 @@
 <#
-.Synopsis
+.SYNOPSIS
+    Configures the Octopus Energy config file used by the module.
+.DESCRIPTION
     Configures the Octopus Energy config file used by the module.
 .PARAMETER mpan
    The mpan of the electricity meter
@@ -14,10 +16,8 @@
 .OUTPUTS
     None
 .EXAMPLE
-    Set-OctopusEnergyHelperConfig -mpan "123456789" -mprn "123456789" -elec_serial_number "E123456789" -gas_serial_number "G123456789"
-.FUNCTIONALITY
-    Configures the Octopus Energy config file used by the module
-
+    C:\PS>Set-OctopusEnergyHelperConfig -mpan "123456789" -mprn "123456789" -elec_serial_number "E123456789" -gas_serial_number "G123456789"
+    Set the defaults for MPAN to 123456789, MPRN to 123456789, electricity meter serial number to E123456789 and gas serial number to G123456789
 #>
 function Set-OctopusEnergyHelperConfig
 {

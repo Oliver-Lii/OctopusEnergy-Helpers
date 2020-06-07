@@ -1,6 +1,8 @@
 <#
-.Synopsis
+.SYNOPSIS
    Find the desired target rate for the specified period of time under the Agile Octopus tariff
+.DESCRIPTION
+   Retrieves Agile Octopus rates which meet the target for the specified duration. E.g Find the time period which has the lowest total rate over a 2 1/2 hours period.
 .PARAMETER apikey
    The Octopus Energy API Key
 .PARAMETER timespan
@@ -8,7 +10,7 @@
 .PARAMETER target
    Value used to specify if the highest or lowest value should be found
 .PARAMETER gsp
-   The GSP of the electricity meter point
+   The Grid Supply Point (GSP) of the electricity meter
 .PARAMETER mpan
    The mpan of the electricity meter
 .PARAMETER period_from
@@ -20,14 +22,15 @@
 .OUTPUTS
    Returns a list of rates which meet the desired duration
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProductTariff -duration (New-TimeSpan -hours 2 -minutes 30) -target "lowest" -mpan 123456789012
+   C:\PS>Find-OctopusEnergyHelperAgileRate -duration (New-TimeSpan -hours 2 -minutes 30) -target "lowest" -mpan 123456789012
+   Find the time period which has the lowest total rate for a 2 1/2 hour period from the current time
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProductTariff -duration (New-TimeSpan -hours 2 -minutes 30) -target "highest" -gsp A
+   C:\PS>Find-OctopusEnergyHelperAgileRate -duration (New-TimeSpan -hours 2 -minutes 30) -target "highest" -gsp A
+   Find the time period which has the highest total rate for a 2 1/2 hour period from the current time for Grid Supply Point A
 .EXAMPLE
-   $fromDate = Get-Date 21:00
-   Get-OctopusEnergyHelperEnergyProductTariff -duration (New-TimeSpan -hours 2 -minutes 30) -target "lowest" -gsp A -period_from $fromDate
-.FUNCTIONALITY
-   Retrieves Agile Octopus rates which meet the target for the specified duration. E.g Find the time period which has the lowest total rate over a 2 1/2 hours period.
+   C:\PS>$fromDate = Get-Date 21:00
+   C:\PS>Find-OctopusEnergyHelperAgileRate -duration (New-TimeSpan -hours 2 -minutes 30) -target "lowest" -gsp A -period_from $fromDate
+   Find the time period which has the lowest total rate for a 2 1/2 hour period starting from today at 21:00
 #>
 
 function Find-OctopusEnergyHelperAgileRate
