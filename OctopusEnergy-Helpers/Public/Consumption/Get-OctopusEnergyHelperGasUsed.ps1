@@ -1,6 +1,8 @@
 <#
-.Synopsis
+.SYNOPSIS
    Retrieves the consumption for a smart gas meter
+.DESCRIPTION
+   Returns the consumption for a smart gas meter. No parameters required if configuration has been set via the Set-OctopusEnergyHelperConfig command
 .PARAMETER apikey
    The Octopus Energy API Key
 .PARAMETER mprn
@@ -23,9 +25,11 @@
 .OUTPUTS
    Returns a PSCustomObject with details of the consumption
 .EXAMPLE
-   Get-OctopusEnergyHelperConsumption -mprn 1234567890 -serial_number A1B2C3D4
-.FUNCTIONALITY
-   Returns the consumption for a smart gas meter. No parameters required if configuration has been set.
+   C:\PS>Get-OctopusEnergyHelperConsumption -mprn 1234567890 -serial_number A1B2C3D4
+   Retrieve the consumption details for MPRN 1234567890 with serial number A1B2C3D4
+.EXAMPLE
+   C:\PS>Get-OctopusEnergyHelperGasUsed
+   Retrieve the electricity consumption details using details configured with Set-OctopusEnergyHelperConfig
 #>
 function Get-OctopusEnergyHelperGasUsed
 {

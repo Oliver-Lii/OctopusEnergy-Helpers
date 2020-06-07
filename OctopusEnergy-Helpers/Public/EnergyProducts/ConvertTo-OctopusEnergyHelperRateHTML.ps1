@@ -1,6 +1,8 @@
 <#
-.Synopsis
+.SYNOPSIS
    Convert rate table data into a HTML string.
+.DESCRIPTION
+   Converts a list of rates into a HTML which can be viewed in a web browser. Default to showing VAT inclusive prices, converting the dates and times to the timezone of the local system.
 .PARAMETER Title
    The title of the HTML page
 .PARAMETER Header
@@ -20,10 +22,9 @@
 .OUTPUTS
    Returns a string of html
 .EXAMPLE
-   $agileRates = Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-A" -period_from (Get-Date) -Verbose
-   ($agileRates).'standard-unit-rates' | ConvertTo-OctopusEnergyHelperRateHTML -TargetRate 11 -Highlight Lower | Out-File .\AgileRate.html
-.FUNCTIONALITY
-   Converts a list of rates into a HTML which can be viewed in a web browser. Default to showing VAT inclusive prices, converting the dates and times to the timezone of the local system.
+   C:\PS>$agileRates = Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-A" -period_from (Get-Date) -Verbose
+   C:\PS>($agileRates).'standard-unit-rates' | ConvertTo-OctopusEnergyHelperRateHTML -TargetRate 11 -Highlight Lower | Out-File .\AgileRate.html
+   Convert the standard unit rates for tariff code E-1R-AGILE-18-02-21-A highlighting values which are lower than 11p/kWH and write this to a file called AgileRate.html
 #>
 
 function ConvertTo-OctopusEnergyHelperRateHTML

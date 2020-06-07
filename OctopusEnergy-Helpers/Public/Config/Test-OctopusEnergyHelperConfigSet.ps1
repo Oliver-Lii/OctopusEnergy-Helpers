@@ -1,14 +1,14 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Tests whether Octopus Energy Config file is available
+.DESCRIPTION
+   Returns a boolean value depending on whether Octopus Energy Config file has been set.
 .OUTPUTS
    Returns a boolean value
 .EXAMPLE
-   Test-OctopusEnergyHelperConfigSet
-.FUNCTIONALITY
-   Returns a boolean value depending on whether Octopus Energy Config file has been set
-
+   C:\PS>Test-OctopusEnergyHelperConfigSet
+   Test that the OCtopus Energy Helper module configuration file exists
 #>
 function Test-OctopusEnergyHelperConfigSet
 {

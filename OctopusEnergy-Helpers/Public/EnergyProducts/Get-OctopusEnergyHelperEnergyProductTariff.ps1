@@ -1,12 +1,12 @@
 <#
-.Synopsis
+.SYNOPSIS
    Retrieves the tariffs of an energy product
+.DESCRIPTION
+   Retrieves the tarffis of an energy product
 .PARAMETER apikey
    The Octopus Energy API Key
 .PARAMETER tariff_code
    The code of the tariff to be retrieved.
-.PARAMETER tariffs_active_at
-   The point in time in which to show the active charges
 .PARAMETER period_from
    Show charges active from the given datetime (inclusive). This parameter can be provided on its own.
 .PARAMETER period_to
@@ -16,10 +16,8 @@
 .OUTPUTS
    Returns a PSCustom object with tariffs of an energy product
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-C" -period_from (Get-Date)
-.FUNCTIONALITY
-   Retrieves the tarffis of an energy product
-
+   C:\PS>Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-C" -period_from (Get-Date)
+   Retrieve the product tariffs for the Octopus Agile for today.
 #>
 function Get-OctopusEnergyHelperEnergyProductTariff
 {

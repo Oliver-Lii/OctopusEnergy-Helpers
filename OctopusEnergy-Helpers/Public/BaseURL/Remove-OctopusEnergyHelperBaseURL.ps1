@@ -1,14 +1,14 @@
 
 <#
-.Synopsis
+.SYNOPSIS
+   Removes the Octopus Energy Base URL variable
+.DESCRIPTION
    Removes the Octopus Energy Base URL variable
 .EXAMPLE
-   Remove-OctopusEnergyHelperBaseURL
+   C:\PS>Remove-OctopusEnergyHelperBaseURL
+   Remove the base URL configured for the module
 .OUTPUTS
    Returns a Boolean value on the authentication removal operation
-.FUNCTIONALITY
-   Removes the Octopus EnergyBase URL variable
-
 #>
 function Remove-OctopusEnergyHelperBaseURL
 {

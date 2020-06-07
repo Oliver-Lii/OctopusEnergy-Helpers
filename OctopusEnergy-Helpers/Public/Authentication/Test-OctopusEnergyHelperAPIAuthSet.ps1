@@ -1,14 +1,14 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Tests whether Octopus Energy Module API Key has been configured
+.DESCRIPTION
+   Returns a boolean value depending on whether OctopusEnergy API key has been set
 .OUTPUTS
    Returns a boolean value
 .EXAMPLE
-   Test-OctopusEnergyHelperAPIAuthSet
-.FUNCTIONALITY
-   Returns a boolean value depending on whether OctopusEnergy API key has been set
-
+   C:\PS>Test-OctopusEnergyHelperAPIAuthSet
+   Test whether the credential file exists
 #>
 function Test-OctopusEnergyHelperAPIAuthSet
 {

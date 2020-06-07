@@ -1,16 +1,17 @@
 <#
-.Synopsis
+.SYNOPSIS
    Collates the results from the responses
-.PARAMETER requestParams
+.DESCRIPTION
+   Hashtable of parameters to be used when calling Invoke-RestMethod
+.PARAMETER RequestParams
    Hashtable of parameters for Invoke-RestMethod
 .INPUTS
    None
 .OUTPUTS
    List containing all the results for a given request
 .EXAMPLE
-   Get-OctopusEnergyHelperResponse -requestParams $requestParams
-.FUNCTIONALITY
-   Collates the results from the responses
+   C:\>Get-OctopusEnergyHelperResponse -requestParams $requestParams
+   Retrieve the Octopus Energy API response
 
 #>
 Function Get-OctopusEnergyHelperResponse

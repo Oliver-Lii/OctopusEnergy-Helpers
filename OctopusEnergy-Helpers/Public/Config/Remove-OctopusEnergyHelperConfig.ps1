@@ -1,14 +1,14 @@
 
 <#
-.Synopsis
+.SYNOPSIS
+   Removes the Octopus Energy Config file
+.DESCRIPTION
    Removes the Octopus Energy Config file
 .EXAMPLE
-   Remove-OctopusEnergyHelperConfig
+   C:\PS>Remove-OctopusEnergyHelperConfig
+   Remove the Octopus Energy Helper configuration file
 .OUTPUTS
    Returns a Boolean value on the authentication removal operation
-.FUNCTIONALITY
-   Removes the Octopus Energy Config file
-
 #>
 function Remove-OctopusEnergyHelperConfig
 {

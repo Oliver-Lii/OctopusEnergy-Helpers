@@ -1,13 +1,14 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Removes the Octopus Energy Module API Key
+.DESCRIPTION
+   Removes the Octopus Energy API Key
 .OUTPUTS
    Returns a Boolean value on the authentication removal operation
 .EXAMPLE
-   Remove-OctopusEnergyHelperAPIAuth
-.FUNCTIONALITY
-   Removes the Octopus Energy API Key
+   C:\PS>Remove-OctopusEnergyHelperAPIAuth
+   Remove the StatusCake Authentication credential configured for the module
 
 #>
 function Remove-OctopusEnergyHelperAPIAuth

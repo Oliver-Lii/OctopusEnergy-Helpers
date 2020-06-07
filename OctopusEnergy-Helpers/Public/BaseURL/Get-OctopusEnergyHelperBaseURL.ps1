@@ -1,14 +1,16 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Gets the OctopusEnergy Base URL
+.DESCRIPTION
+   Returns a string with the URL for the target endpoint
+.PARAMETER Endpoint
+   The API endpoint to retrieve.
 .OUTPUTS
    Returns a string with the URL for the target endpoint
 .EXAMPLE
-   Get-OctopusEnergyHelperBaseURL -endpoint products   
-.FUNCTIONALITY
-   Returns a string with the URL for the target endpoint
-
+   C:\PS>Get-OctopusEnergyHelperBaseURL -endpoint products
+   Retrieve the path to API products endpoint
 #>
 function Get-OctopusEnergyHelperBaseURL
 {

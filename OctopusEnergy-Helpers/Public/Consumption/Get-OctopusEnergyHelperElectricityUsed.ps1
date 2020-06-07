@@ -1,6 +1,8 @@
 <#
-.Synopsis
+.SYNOPSIS
    Retrieves the consumption for a smart electricity meter.
+.DESCRIPTION
+   Returns the consumption for a smart electricity meter. No parameters required if configuration has been set.
 .PARAMETER apikey
    The Octopus Energy API Key
 .PARAMETER mpan
@@ -23,9 +25,11 @@
 .OUTPUTS
    Returns a PSCustomObject with details of the consumption
 .EXAMPLE
-   Get-OctopusEnergyHelperElectricityUsed -mpan 1234567890 -serial_number A1B2C3D4
-.FUNCTIONALITY
-   Returns the consumption for a smart electricity meter. No parameters required if configuration has been set.
+   C:\PS>Get-OctopusEnergyHelperElectricityUsed -mpan 1234567890 -serial_number A1B2C3D4
+   Retrieve the electricity consumption details for MPAN 1234567890 with serial number A1B2C3D4
+.EXAMPLE
+   C:\PS>Get-OctopusEnergyHelperElectricityUsed
+   Retrieve the electricity consumption details using details configured with Set-OctopusEnergyHelperConfig
 #>
 function Get-OctopusEnergyHelperElectricityUsed
 {

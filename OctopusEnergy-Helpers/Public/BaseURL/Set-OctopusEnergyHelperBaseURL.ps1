@@ -1,6 +1,8 @@
 <#
-.Synopsis
-    Sets the Octopus Energy API Key used by the module.
+.SYNOPSIS
+    Sets the Octopus Energy URL used by the module.
+.DESCRIPTION
+    Sets the Octopus Energy BaseURL used by the module. The default is "https://api.octopus.energy".
 .PARAMETER BaseURL
     Base URL for Octopus Energy API
 .INPUTS
@@ -8,10 +10,8 @@
 .OUTPUTS
     None
 .EXAMPLE
-    Set-OctopusEnergyHelperBaseURL -BaseURL "https://api.octopus.energy"   
-.FUNCTIONALITY
-    Sets the Octopus Energy API Key used by the module
-   
+    C:\PS>Set-OctopusEnergyHelperBaseURL -BaseURL "https://api.octopus.energy"
+    Configure the Octopus Energy Base URL to use "https://api.octopus.energy" as the base URL
 #>
 function Set-OctopusEnergyHelperBaseURL
 {

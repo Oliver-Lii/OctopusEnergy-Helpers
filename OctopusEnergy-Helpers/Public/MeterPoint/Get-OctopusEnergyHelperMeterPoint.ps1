@@ -1,7 +1,9 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Retrieves the meter point for a Octopus Energy electricity meter
+.DESCRIPTION
+   Returns the meter point for a Octopus Energy electricity meter
 .PARAMETER apikey
    The Octopus Energy API Key
 .PARAMETER mpan
@@ -11,10 +13,8 @@
 .OUTPUTS
    Returns a PSCustomObject with details of the meter point
 .EXAMPLE
-   Get-OctopusEnergyHelperMeterPoint -mpan 1234567890
-.FUNCTIONALITY
-   Returns the meter point for a Octopus Energy electricity meter
-
+   C:\PS>Get-OctopusEnergyHelperMeterPoint -mpan 1234567890
+   Retrieve meter point details for mpan 1234567890
 #>
 function Get-OctopusEnergyHelperMeterPoint
 {

@@ -1,6 +1,8 @@
 <#
-.Synopsis
+.SYNOPSIS
    Retrieves the consumption for a smart gas or electricity meter
+.DESCRIPTION
+   Returns the consumption for a smart gas or electricity meter. Consumption data returned is dependent on whether the MPAN or MPRN and associated serial number is supplied.
 .PARAMETER apikey
    The Octopus Energy API Key
 .PARAMETER mpan
@@ -25,9 +27,11 @@
 .OUTPUTS
    Returns a PSCustomObject with details of the consumption
 .EXAMPLE
-   Get-OctopusEnergyHelperConsumption -mpan 1234567890 -serial_number A1B2C3D4
-.FUNCTIONALITY
-   Returns the consumption for a smart gas or electricity meter.
+   C:\PS>Get-OctopusEnergyHelperConsumption -mpan 1234567890 -serial_number A1B2C3D4
+   Retrieve the electricity consumption data with MPAN 1234567890 with serial number A1B2C3D4
+.EXAMPLE
+   C:\PS>Get-OctopusEnergyHelperConsumption -mprn 1234567890 -serial_number A1B2C3D4
+   Retrieve the gas consumption data with MPRN 1234567890 with serial number A1B2C3D4
 #>
 function Get-OctopusEnergyHelperConsumption
 {

@@ -1,16 +1,16 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Gets the Octopus Energy Config
-.PARAMETER property
+.DESCRIPTION
+   Returns the information relating to the requested property of config data, returning all config data if no property specified.
+.PARAMETER Property
    The property of the Octopus Energy Config to retrieve
 .OUTPUTS
    Returns the requested property of config
 .EXAMPLE
-   Get-OctopusEnergyHelperConfig -property mpan
-.FUNCTIONALITY
-   Returns the information relating to the requested property of config data, returning all config data if no property specified.
-
+   C:\PS>Get-OctopusEnergyHelperConfig -property mpan
+   Retrieve the configuration for the mpan property
 #>
 function Get-OctopusEnergyHelperConfig
 {

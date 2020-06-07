@@ -1,11 +1,17 @@
 
 <#
-.Synopsis
+.SYNOPSIS
    Retrieves the details of an energy product
+.DESCRIPTION
+   Retrieves the details of an energy product. Products can be retrieved by product code, display name or fulle name. When called with no parameters this will return all products.
 .PARAMETER apikey
    The Octopus Energy API Key
+.PARAMETER full_name
+   The full name of the product to be retrieved.
+.PARAMETER display_name
+   The display name of the product to be retrieved.
 .PARAMETER product_code
-   The code of the product to be retrieved.
+   The product code of the product to be retrieved.
 .PARAMETER tariffs_active_at
    The point in time in which to show the active charges
 .INPUTS
@@ -13,16 +19,17 @@
 .OUTPUTS
    Returns a object with details of an energy product
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProduct -product_code "GO-18-06-12"
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct -product_code "GO-18-06-12"
+   Retrieve the details for the Octopus Go product with code GO-18-06-12
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProduct -display_name @("Flexible Octopus", "Super Green Octopus") -tariffs_active_at (Get-Date)
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct -display_name @("Flexible Octopus", "Super Green Octopus") -tariffs_active_at (Get-Date)
+   Retrieve the details for the products with display name "Flexible Octopus" and "Super Green Octopus" with tariffs active from today
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProduct -full_name @("Super Green Octopus 12M Fixed April 2019 v1", "Flexible Octopus April 2019 v1") -tariffs_active_at (Get-Date)
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct -full_name @("Super Green Octopus 12M Fixed April 2019 v1", "Flexible Octopus April 2019 v1") -tariffs_active_at (Get-Date)
+   Retrieve the details for the products with full name "Super Green Octopus 12M Fixed April 2019 v1" and "Flexible Octopus April 2019 v1" with tariffs active from today
 .EXAMPLE
-   Get-OctopusEnergyHelperEnergyProduct
-.FUNCTIONALITY
-   Retrieves the details of an energy product
-
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct
+   Retrieve all products
 #>
 function Get-OctopusEnergyHelperEnergyProduct
 {
