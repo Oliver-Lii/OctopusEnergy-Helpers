@@ -3,24 +3,24 @@
    Retrieves the consumption for a smart gas or electricity meter
 .DESCRIPTION
    Returns the consumption for a smart gas or electricity meter. Consumption data returned is dependent on whether the MPAN or MPRN and associated serial number is supplied.
-.PARAMETER apikey
+.PARAMETER APIKey
    The Octopus Energy API Key
-.PARAMETER mpan
-   The mpan of the electricity meter
-.PARAMETER mprn
-   The mprn of the gas meter
-.PARAMETER serial_number
+.PARAMETER MPAN
+   The MPAN of the electricity meter
+.PARAMETER MPRN
+   The MPRN of the gas meter
+.PARAMETER SerialNumber
    The gas or electricity meter's serial number
-.PARAMETER period_from
+.PARAMETER PeriodFrom
    Show consumption from the given datetime (inclusive). This parameter can be provided on its own.
-.PARAMETER period_to
+.PARAMETER PeriodTo
    Show consumption to the given datetime (exclusive). This parameter also requires providing the period_from parameter to create a range.
-.PARAMETER page_size
+.PARAMETER PageSize
    Page size of returned results. Default is 100, maximum is 25,000 to give a full year of half-hourly consumption details.
-.PARAMETER order_by
+.PARAMETER OrderBy
    Ordering of results returned. Default is that results are returned in reverse order from latest available figure.
    Valid values: * ‘period’, to give results ordered forward. * ‘-period’, (default), to give results ordered from most recent backwards.
-.PARAMETER group_by
+.PARAMETER GroupBy
    Grouping of consumption. Default is that consumption is returned in half-hour periods. Possible alternatives are: * ‘hour’ * ‘day’ * ‘week’ * ‘month’ * ‘quarter’
 .INPUTS
    None
@@ -32,97 +32,91 @@
 .EXAMPLE
    C:\PS>Get-OctopusEnergyHelperConsumption -mprn 1234567890 -serial_number A1B2C3D4
    Retrieve the gas consumption data with MPRN 1234567890 with serial number A1B2C3D4
+.LINK
+   https://developer.octopus.energy/docs/api/#consumption
 #>
 function Get-OctopusEnergyHelperConsumption
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$APIKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$true,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
       [ValidateNotNullOrEmpty()]
-      [string]$mpan,
+      [string]$MPAN,
 
       [Parameter(Mandatory=$true,ParameterSetName='Gas')]
       [Parameter(Mandatory=$true,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
       [ValidateNotNullOrEmpty()]
-      [string]$mprn,
+      [string]$MPRN,
 
       [Parameter(Mandatory=$true,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$true,ParameterSetName='Gas')]
       [Parameter(Mandatory=$true,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
       [ValidateNotNullOrEmpty()]
-      [string]$serial_number,
+      [Alias("serial_number")]
+      [string]$SerialNumber,
 
       [Parameter(Mandatory=$false,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$false,ParameterSetName='Gas')]
       [Parameter(Mandatory=$false,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
-      [datetime]$period_from,
+      [Alias("period_from")]
+      [datetime]$PeriodFrom,
 
       [Parameter(Mandatory=$false,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$false,ParameterSetName='Gas')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
-      [datetime]$period_to,
+      [Alias("period_to")]
+      [datetime]$PeriodTo,
 
       [Parameter(Mandatory=$false,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$false,ParameterSetName='Gas')]
       [Parameter(Mandatory=$false,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$false,ParameterSetName='ExclusiveDateRange')]
       [ValidateRange(1,25000)]
-      [int]$page_size=100,
+      [Alias("page_size")]
+      [int]$PageSize=1000,
 
       [Parameter(Mandatory=$false,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$false,ParameterSetName='Gas')]
       [Parameter(Mandatory=$false,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$false,ParameterSetName='ExclusiveDateRange')]
       [ValidateSet("period","-period")]
-      [string]$order_by,
+      [Alias("order_by")]
+      [string]$OrderBy,
 
       [Parameter(Mandatory=$false,ParameterSetName='Electricity')]
       [Parameter(Mandatory=$false,ParameterSetName='Gas')]
       [Parameter(Mandatory=$false,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$false,ParameterSetName='ExclusiveDateRange')]
       [ValidateSet("hour","day","week","month","quarter")]
-      [string]$group_by
+      [Alias("group_by")]
+      [string]$GroupBy
    )
 
-   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $oeAPIKey = (New-Object PSCredential "user",$APIKey).GetNetworkCredential().Password
    $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (new-object System.Security.SecureString))
 
-   if($mpan)
+   if($MPAN)
    {
       $URL = Get-OctopusEnergyHelperBaseURL -endpoint elecmp
-      $requestURL = "$URL$mpan/meters/$serial_number/consumption/"
+      $requestURL = "$URL$MPAN/meters/$SerialNumber/consumption/"
    }
    else
    {
       $URL = Get-OctopusEnergyHelperBaseURL -endpoint gasmp
-      $requestURL = "$URL$mprn/meters/$serial_number/consumption/"
+      $requestURL = "$URL$MPRN/meters/$SerialNumber/consumption/"
    }
 
-   $psParams = @{}
-   $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("apikey","mpan","mprn","serial_number")
-   foreach ($key in $ParameterList.keys)
-   {
-       $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;
-       if($ParamsToIgnore -contains $var.Name)
-       {
-           continue
-       }
-       elseif($var.value -or $var.value -eq 0)
-       {
-         $value = $var.value
-         $psParams.Add($var.name,$value)
-       }
-   }
-
-   $apiParams = $psParams | ConvertTo-OctopusEnergyHelperAPIParam
+   $paramsToIgnore = @("APIKey","MPAN","MPRN","SerialNumber")
+   $allParameterValues = $MyInvocation | Get-OctopusEnergyHelperParameterValue -BoundParameters $PSBoundParameters
+   $apiParams = $MyInvocation | Get-OctopusEnergyHelperAPIParameter -Hashtable $allParameterValues -Exclude $paramsToIgnore
+   $apiParams = $apiParams | ConvertTo-OctopusEnergyHelperAPIParam
 
    $requestParams = @{
       Credential = $Credential

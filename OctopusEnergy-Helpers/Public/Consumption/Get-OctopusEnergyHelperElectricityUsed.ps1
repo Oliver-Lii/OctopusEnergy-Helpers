@@ -3,22 +3,22 @@
    Retrieves the consumption for a smart electricity meter.
 .DESCRIPTION
    Returns the consumption for a smart electricity meter. No parameters required if configuration has been set.
-.PARAMETER apikey
+.PARAMETER APIKey
    The Octopus Energy API Key
-.PARAMETER mpan
+.PARAMETER MPAN
    The mpan of the electricity meter
-.PARAMETER serial_number
+.PARAMETER SerialNumber
    The electricity meter's serial number
-.PARAMETER period_from
+.PARAMETER PeriodFrom
    Show consumption from the given datetime (inclusive). This parameter can be provided on its own.
-.PARAMETER period_to
+.PARAMETER PeriodTo
    Show consumption to the given datetime (exclusive). This parameter also requires providing the period_from parameter to create a range.
-.PARAMETER page_size
+.PARAMETER PageSize
    Page size of returned results. Default is 100, maximum is 25,000 to give a full year of half-hourly consumption details.
-.PARAMETER order_by
+.PARAMETER OrderBy
    Ordering of results returned. Default is that results are returned in reverse order from latest available figure.
    Valid values: * ‘period’, to give results ordered forward. * ‘-period’, (default), to give results ordered from most recent backwards.
-.PARAMETER group_by
+.PARAMETER GroupBy
    Grouping of consumption. Default is that consumption is returned in half-hour periods. Possible alternatives are: * ‘hour’ * ‘day’ * ‘week’ * ‘month’ * ‘quarter’
 .INPUTS
    None
@@ -30,49 +30,50 @@
 .EXAMPLE
    C:\PS>Get-OctopusEnergyHelperElectricityUsed
    Retrieve the electricity consumption details using details configured with Set-OctopusEnergyHelperConfig
+.LINK
+   https://developer.octopus.energy/docs/api/#consumption
 #>
 function Get-OctopusEnergyHelperElectricityUsed
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
       [ValidateNotNullOrEmpty()]
-      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$APIKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [ValidateNotNullOrEmpty()]
-      [string]$mpan=(Get-OctopusEnergyHelperConfig -property mpan),
+      [string]$MPAN=(Get-OctopusEnergyHelperConfig -property mpan),
 
       [ValidateNotNullOrEmpty()]
-      [string]$serial_number=(Get-OctopusEnergyHelperConfig -property elec_serial_number),
+      [Alias("serial_number")]
+      [string]$SerialNumber=(Get-OctopusEnergyHelperConfig -property elec_serial_number),
 
       [Parameter(ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
-      [datetime]$period_from,
+      [Alias("period_from")]
+      [datetime]$PeriodFrom,
 
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
-      [datetime]$period_to,
+      [Alias("period_to")]
+      [datetime]$PeriodTo,
 
       [ValidateRange(1,25000)]
-      [int]$page_size,
+      [Alias("page_size")]
+      [int]$PageSize=1500,
 
       [ValidateSet("period","-period")]
-      [string]$order_by,
+      [Alias("order_by")]
+      [string]$OrderBy,
 
       [ValidateSet("hour","day","week","month","quarter")]
-      [string]$group_by
+      [Alias("group_by")]
+      [string]$GroupBy
    )
 
-   foreach($param in $MyInvocation.MyCommand.Parameters.GetEnumerator())
-   {
-      $var = Get-Variable -Name $param.Key -ErrorAction SilentlyContinue
-      if ( $var.value -and (! $PSBoundParameters.ContainsKey($var.Name)))
-      {
-         $PSBoundParameters.Add($param.Key,$var.value)
-      }
-   }
+   $allParameterValues = $MyInvocation | Get-OctopusEnergyHelperParameterValue -BoundParameters $PSBoundParameters
 
    if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Electricity Consumption") )
    {
-      $response = Get-OctopusEnergyHelperConsumption @PSBoundParameters
+      $response = Get-OctopusEnergyHelperConsumption @allParameterValues
       Return $response
    }
 }

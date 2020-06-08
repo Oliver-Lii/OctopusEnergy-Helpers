@@ -4,19 +4,19 @@
    Retrieves the list of energy products
 .DESCRIPTION
    Retrieves the list of energy products
-.PARAMETER apikey
+.PARAMETER APIKey
    The Octopus Energy API Key
-.PARAMETER is_variable
+.PARAMETER Variable
    Show only variable products
-.PARAMETER is_green
+.PARAMETER Green
    Show only green products
-.PARAMETER is_tracker
+.PARAMETER Tracker
    Show only tracker products
-.PARAMETER is_prepay
+.PARAMETER Prepay
    Show only pre-pay products
-.PARAMETER is_business
+.PARAMETER Business
    Show only business products
-.PARAMETER available_at
+.PARAMETER AvailableAt
    Show products available for new agreements on the give datetime.
 .INPUTS
    None
@@ -26,52 +26,46 @@
    C:\PS>Get-OctopusEnergyHelperEnergyProductList
    Retrieve all energy products
 .EXAMPLE
-   C:\PS>Get-OctopusEnergyHelperEnergyProductList -available_at $((Get-Date).AddMonths(-1))
+   C:\PS>Get-OctopusEnergyHelperEnergyProductList -AvailableAt $((Get-Date).AddMonths(-1))
    Retrieve all energy products which are available in the last month
 .EXAMPLE
-   C:\PS>Get-OctopusEnergyHelperEnergyProductList -is_variable
+   C:\PS>Get-OctopusEnergyHelperEnergyProductList -Variable
    Retrieve all energy products which are variable rate only
+.LINK
+   https://developer.octopus.energy/docs/api/#energy-products
 #>
 function Get-OctopusEnergyHelperEnergyProductList
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$APIKey=(Get-OctopusEnergyHelperAPIAuth),
 
-      [switch]$is_variable,
+      [Alias("is_variable")]
+      [switch]$Variable,
 
-      [switch]$is_green,
+      [Alias("is_green")]
+      [switch]$Green,
 
-      [switch]$is_tracker,
+      [Alias("is_tracker")]
+      [switch]$Tracker,
 
-      [switch]$is_prepay,
+      [Alias("is_prepay")]
+      [switch]$Prepay,
 
-      [switch]$is_business,
+      [Alias("is_business")]
+      [switch]$Business,
 
-      [datetime]$available_at
+      [Alias("available_at")]
+      [datetime]$AvailableAt
    )
-   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $oeAPIKey = (New-Object PSCredential "user",$APIKey).GetNetworkCredential().Password
    $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
    $requestURL = Get-OctopusEnergyHelperBaseURL -endpoint products
 
-   $psParams = @{}
-   $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("apikey")
-   foreach ($key in $ParameterList.keys)
-   {
-      $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;
-      if($ParamsToIgnore -contains $var.Name)
-      {
-          continue
-      }
-      elseif($var.value -or $var.value -eq 0)
-      {
-         $value = $var.value
-         $psParams.Add($var.name,$value)
-      }
-   }
+   $allParameterValues = $MyInvocation | Get-OctopusEnergyHelperParameterValue -BoundParameters $PSBoundParameters
+   $apiParams = $MyInvocation | Get-OctopusEnergyHelperAPIParameter -Hashtable $allParameterValues -Exclude $paramsToIgnore
+   $apiParams = $apiParams | ConvertTo-OctopusEnergyHelperAPIParam
 
-   $apiParams = $psParams | ConvertTo-OctopusEnergyHelperAPIParam
    $requestParams = @{
       Credential = $Credential
       uri = $requestURL
@@ -79,7 +73,8 @@ function Get-OctopusEnergyHelperEnergyProductList
       method = "Get"
       ContentType = "application/x-www-form-urlencoded"
       body = $apiParams
-  }
+   }
+
    if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Product List") )
    {
       $response = Get-OctopusEnergyHelperResponse -requestParams $requestParams

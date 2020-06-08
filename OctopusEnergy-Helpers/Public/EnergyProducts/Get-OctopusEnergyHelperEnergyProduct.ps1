@@ -4,58 +4,64 @@
    Retrieves the details of an energy product
 .DESCRIPTION
    Retrieves the details of an energy product. Products can be retrieved by product code, display name or fulle name. When called with no parameters this will return all products.
-.PARAMETER apikey
+.PARAMETER APIKey
    The Octopus Energy API Key
-.PARAMETER full_name
+.PARAMETER FullName
    The full name of the product to be retrieved.
-.PARAMETER display_name
+.PARAMETER DisplayName
    The display name of the product to be retrieved.
-.PARAMETER product_code
+.PARAMETER ProductCode
    The product code of the product to be retrieved.
-.PARAMETER tariffs_active_at
+.PARAMETER TariffsActiveAt
    The point in time in which to show the active charges
 .INPUTS
    None
 .OUTPUTS
    Returns a object with details of an energy product
 .EXAMPLE
-   C:\PS>Get-OctopusEnergyHelperEnergyProduct -product_code "GO-18-06-12"
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct -ProductCode "GO-18-06-12"
    Retrieve the details for the Octopus Go product with code GO-18-06-12
 .EXAMPLE
-   C:\PS>Get-OctopusEnergyHelperEnergyProduct -display_name @("Flexible Octopus", "Super Green Octopus") -tariffs_active_at (Get-Date)
-   Retrieve the details for the products with display name "Flexible Octopus" and "Super Green Octopus" with tariffs active from today
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct -DisplayName @("Agile Octopus", "Octopus Go") -TariffsActiveAt (Get-Date)
+   Retrieve the details for the products with display name "Agile Octopus" and "Octopus Go" with tariffs active from today
 .EXAMPLE
-   C:\PS>Get-OctopusEnergyHelperEnergyProduct -full_name @("Super Green Octopus 12M Fixed April 2019 v1", "Flexible Octopus April 2019 v1") -tariffs_active_at (Get-Date)
-   Retrieve the details for the products with full name "Super Green Octopus 12M Fixed April 2019 v1" and "Flexible Octopus April 2019 v1" with tariffs active from today
+   C:\PS>Get-OctopusEnergyHelperEnergyProduct -FullName @("Agile Octopus February 2018", "Octopus Go June 2018") -TariffsActiveAt (Get-Date)
+   Retrieve the details for the products with full name "Agile Octopus February 2018" and "Octopus Go June 2018" with tariffs active from today
 .EXAMPLE
    C:\PS>Get-OctopusEnergyHelperEnergyProduct
    Retrieve all products
+.LINK
+   https://developer.octopus.energy/docs/api/#retrieve-a-product
 #>
 function Get-OctopusEnergyHelperEnergyProduct
 {
    [CmdletBinding(SupportsShouldProcess=$true,DefaultParameterSetName='all')]
    [OutputType([System.Collections.Generic.List[PSObject]])]
    Param(
-      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$APIKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='ByFullName')]
       [ValidateNotNullOrEmpty()]
-      [string[]]$full_name,
+      [Alias("full_name")]
+      [string[]]$FullName,
 
       [Parameter(Mandatory=$true,ParameterSetName='ByDisplayName')]
       [ValidateNotNullOrEmpty()]
-      [string[]]$display_name,
+      [Alias("display_name")]
+      [string[]]$DisplayName,
 
       [Parameter(Mandatory=$true,ParameterSetName='ByProductCode')]
       [ValidateNotNullOrEmpty()]
-      [string[]]$product_code,
+      [Alias("product_code")]
+      [string[]]$ProductCode,
 
       [Parameter(ParameterSetName='ByFullName')]
       [Parameter(ParameterSetName='ByDisplayName')]
       [Parameter(ParameterSetName='ByProductCode')]
-      [datetime]$tariffs_active_at
+      [Alias("tariffs_active_at")]
+      [datetime]$TariffsActiveAt
    )
-   $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
+   $oeAPIKey = (New-Object PSCredential "user",$APIKey).GetNetworkCredential().Password
    $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
 
    $URL = Get-OctopusEnergyHelperBaseURL -endpoint products
@@ -64,40 +70,27 @@ function Get-OctopusEnergyHelperEnergyProduct
    {
       if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Product List") )
       {
-         $oeProductList = Get-OctopusEnergyHelperEnergyProductList -ApiKey $ApiKey
+         $oeProductList = Get-OctopusEnergyHelperEnergyProductList -ApiKey $APIKey
       }
 
       Switch($PSCmdlet.ParameterSetName)
       {
          'ByFullName'{
-            $product_code = ($oeProductList | Where-Object {($_ | Select-Object -ExpandProperty "full_name") -in $full_name}).code
+            $ProductCode = ($oeProductList | Where-Object {($_ | Select-Object -ExpandProperty "full_name") -in $FullName}).code
          }
          'ByDisplayName'{
-            $product_code = ($oeProductList | Where-Object {($_ | Select-Object -ExpandProperty "display_name") -in $display_name}).code
+            $ProductCode = ($oeProductList | Where-Object {($_ | Select-Object -ExpandProperty "display_name") -in $DisplayName}).code
          }
          'All'{
-            $product_code = $oeProductList.code
+            $ProductCode = $oeProductList.code
          }
       }
    }
 
-   $psParams = @{}
-   $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("apikey","product_code","display_name","product_code","full_name")
-   foreach ($key in $ParameterList.keys)
-   {
-      $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;
-      if($ParamsToIgnore -contains $var.Name)
-      {
-         continue
-      }
-      elseif($var.value -or $var.value -eq 0)
-      {
-         $value = $var.value
-         $psParams.Add($var.name,$value)
-      }
-   }
-   $apiParams = $psParams | ConvertTo-OctopusEnergyHelperAPIParam
+   $ParamsToIgnore = @("APIKey","ProductCode","DisplayName","FullName")
+   $allParameterValues = $MyInvocation | Get-OctopusEnergyHelperParameterValue -BoundParameters $PSBoundParameters
+   $apiParams = $MyInvocation | Get-OctopusEnergyHelperAPIParameter -Hashtable $allParameterValues -Exclude $paramsToIgnore
+   $apiParams = $apiParams | ConvertTo-OctopusEnergyHelperAPIParam
 
    $requestParams = @{
       Credential = $Credential
@@ -109,12 +102,12 @@ function Get-OctopusEnergyHelperEnergyProduct
    }
    if( $pscmdlet.ShouldProcess("Octopus Energy API", "Retrieve Product Detail") )
    {
-      $oehlist = [System.Collections.Generic.List[PSObject]]::new($product_code.count)
-      foreach($code in $product_code)
+      $oehlist = [System.Collections.Generic.List[PSObject]]::new($ProductCode.count)
+      foreach($code in $ProductCode)
       {
          $requestParams.uri = "$URL$code/"
-         $percent = ($oehlist.Count / $product_code.count) * 100
-         Write-Progress -Activity "Retrieving results" -Status "Collected $($oehlist.Count) out of $($product_code.count) results" -PercentComplete $percent
+         $percent = ($oehlist.Count / $ProductCode.count) * 100
+         Write-Progress -Activity "Retrieving results" -Status "Collected $($oehlist.Count) out of $($ProductCode.count) results" -PercentComplete $percent
          $response = Get-OctopusEnergyHelperResponse -requestParams $requestParams
          $oehlist.Add($response)
       }
