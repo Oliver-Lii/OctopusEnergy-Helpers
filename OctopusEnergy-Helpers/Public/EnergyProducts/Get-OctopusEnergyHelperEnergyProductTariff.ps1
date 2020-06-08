@@ -3,39 +3,44 @@
    Retrieves the tariffs of an energy product
 .DESCRIPTION
    Retrieves the tarffis of an energy product
-.PARAMETER apikey
+.PARAMETER APIKey
    The Octopus Energy API Key
-.PARAMETER tariff_code
+.PARAMETER TariffCode
    The code of the tariff to be retrieved.
-.PARAMETER period_from
+.PARAMETER PeriodFrom
    Show charges active from the given datetime (inclusive). This parameter can be provided on its own.
-.PARAMETER period_to
+.PARAMETER PeriodTo
    Show charges active to the given datetime (exclusive). This parameter also requires providing the period_from parameter to create a range.
 .INPUTS
    None
 .OUTPUTS
    Returns a PSCustom object with tariffs of an energy product
 .EXAMPLE
-   C:\PS>Get-OctopusEnergyHelperEnergyProductTariff -tariff_code "E-1R-AGILE-18-02-21-C" -period_from (Get-Date)
+   C:\PS>Get-OctopusEnergyHelperEnergyProductTariff -TariffCode "E-1R-AGILE-18-02-21-C" -PeriodFrom (Get-Date)
    Retrieve the product tariffs for the Octopus Agile for today.
+.LINK
+   https://developer.octopus.energy/docs/api/#list-tariff-charges
 #>
 function Get-OctopusEnergyHelperEnergyProductTariff
 {
    [CmdletBinding(SupportsShouldProcess=$true)]
    Param(
-      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$APIKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
       [ValidatePattern("^(E\-[12]R|^G\-1R)\-[A-Z0-9\-]*\-[ABCDEFGHJKLMNP]$")]
-      [string]$tariff_code,
+      [Alias("tariff_code")]
+      [string]$TariffCode,
 
       [Parameter(Mandatory=$false,ParameterSetName='InclusiveDateRange')]
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
-      [datetime]$period_from,
+      [Alias("period_from")]
+      [datetime]$PeriodFrom,
 
       [Parameter(Mandatory=$true,ParameterSetName='ExclusiveDateRange')]
-      [datetime]$period_to
+      [Alias("period_to")]
+      [datetime]$PeriodTo
    )
    $oeAPIKey = (New-Object PSCredential "user",$ApiKey).GetNetworkCredential().Password
    $Credential = New-Object System.Management.Automation.PSCredential ($oeAPIKey, (New-Object System.Security.SecureString))
@@ -44,8 +49,8 @@ function Get-OctopusEnergyHelperEnergyProductTariff
 
    $rates = [System.Collections.Generic.List[String]]@("standing-charges","standard-unit-rates")
 
-   $tariff_code -match "^(?<fuelType>[EG])\-(?<rateType>[12]R)\-(?<productCode>[A-Z0-9\-]*)\-(?<gspCode>[ABCDEFGHJKLMNP]$)" | Out-Null
-   $product_code = $matches.ProductCode
+   $TariffCode -match "^(?<fuelType>[EG])\-(?<rateType>[12]R)\-(?<productCode>[A-Z0-9\-]*)\-(?<gspCode>[ABCDEFGHJKLMNP]$)" | Out-Null
+   $productCode = $matches.ProductCode
    switch($Matches.fuelType)
    {
       "G" {$fuelType = "gas"}
@@ -62,29 +67,16 @@ function Get-OctopusEnergyHelperEnergyProductTariff
    $fuelPath = "$fuelType-tariffs"
 
    $tariffData = [PSCustomObject]@{
-      ProductCode = $product_code
-      TariffCode = $tariff_code
+      ProductCode = $productCode
+      TariffCode = $TariffCode
       FuelType = $fuelType
    }
 
-   $psParams = @{}
-   $ParameterList = (Get-Command -Name $MyInvocation.InvocationName).Parameters
-   $ParamsToIgnore = @("apikey","product_code","tariff_code","type")
-   foreach ($key in $ParameterList.keys)
-   {
-       $var = Get-Variable -Name $key -ErrorAction SilentlyContinue;
-       if($ParamsToIgnore -contains $var.Name)
-       {
-           continue
-       }
-       elseif($var.value -or $var.value -eq 0)
-       {
-         $value = $var.value
-         $psParams.Add($var.name,$value)
-       }
-   }
+   $ParamsToIgnore = @("APIKey","TariffCode")
+   $allParameterValues = $MyInvocation | Get-OctopusEnergyHelperParameterValue -BoundParameters $PSBoundParameters
+   $apiParams = $MyInvocation | Get-OctopusEnergyHelperAPIParameter -Hashtable $allParameterValues -Exclude $paramsToIgnore
+   $apiParams = $apiParams | ConvertTo-OctopusEnergyHelperAPIParam
 
-   $apiParams = $psParams | ConvertTo-OctopusEnergyHelperAPIParam
    $requestParams = @{
       Credential = $Credential
       UseBasicParsing = $true
@@ -99,7 +91,7 @@ function Get-OctopusEnergyHelperEnergyProductTariff
       foreach($rate in $rates)
       {
          $tariffList = @()
-         $requestParams["uri"] = "$URL$product_code/$fuelPath/$tariff_code/$rate/"
+         $requestParams["uri"] = "$URL$ProductCode/$fuelPath/$TariffCode/$rate/"
          $tariffList = Get-OctopusEnergyHelperResponse -requestParams $requestParams
          $tariffData | Add-Member -MemberType NoteProperty -Name $rate -Value $tariffList
       }

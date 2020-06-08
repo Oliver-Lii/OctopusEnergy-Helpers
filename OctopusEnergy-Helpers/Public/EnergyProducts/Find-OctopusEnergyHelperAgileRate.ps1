@@ -3,19 +3,21 @@
    Find the desired target rate for the specified period of time under the Agile Octopus tariff
 .DESCRIPTION
    Retrieves Agile Octopus rates which meet the target for the specified duration. E.g Find the time period which has the lowest total rate over a 2 1/2 hours period.
-.PARAMETER apikey
+.PARAMETER APIKey
    The Octopus Energy API Key
-.PARAMETER timespan
+.PARAMETER Duration
+   The duration of time the lowest price is needed
+.PARAMETER Timespan
    The period of time which should be tracked
-.PARAMETER target
+.PARAMETER Target
    Value used to specify if the highest or lowest value should be found
-.PARAMETER gsp
+.PARAMETER GSP
    The Grid Supply Point (GSP) of the electricity meter
-.PARAMETER mpan
-   The mpan of the electricity meter
-.PARAMETER period_from
+.PARAMETER MPAN
+   The MPAN of the electricity meter
+.PARAMETER PeriodFrom
    Search through rates from the given datetime (inclusive).
-.PARAMETER period_to
+.PARAMETER PeriodTo
    Search through rates to the given datetime (exclusive).
 .INPUTS
    None
@@ -38,32 +40,34 @@ function Find-OctopusEnergyHelperAgileRate
    [CmdletBinding(SupportsShouldProcess=$true,DefaultParameterSetName='MPAN')]
    [OutputType([System.Collections.Generic.List[PSObject]])]
    Param(
-      [securestring]$ApiKey=(Get-OctopusEnergyHelperAPIAuth),
+      [securestring]$APIKey=(Get-OctopusEnergyHelperAPIAuth),
 
       [Parameter(Mandatory=$true,ParameterSetName='GSPCode')]
       [Parameter(Mandatory=$true,ParameterSetName='MPAN')]
-      [timespan]$duration,
+      [timespan]$Duration,
 
       [Parameter(ParameterSetName='GSPCode')]
       [Parameter(ParameterSetName='MPAN')]
       [ValidateSet("lowest","highest")]
-      [string]$target="lowest",
+      [string]$Timespan="lowest",
 
       [Parameter(Mandatory=$true,ParameterSetName='GSPCode')]
       [ValidateSet("A","B","C","D","E","F","G","H","J","K","L","M","N","P")]
-      [string]$gsp,
+      [string]$GSP,
 
       [Parameter(Mandatory=$false,ParameterSetName='MPAN')]
       [ValidateNotNullOrEmpty()]
-      [string]$mpan = (Get-OctopusEnergyHelperConfig -property mpan),
+      [string]$MPAN = (Get-OctopusEnergyHelperConfig -property mpan),
 
       [Parameter(ParameterSetName='GSPCode')]
       [Parameter(ParameterSetName='MPAN')]
-      [datetime]$period_from = $((Get-Date)),
+      [Alias("period_from")]
+      [datetime]$PeriodFrom = $((Get-Date)),
 
       [Parameter(ParameterSetName='GSPCode')]
       [Parameter(ParameterSetName='MPAN')]
-      [datetime]$period_to
+      [Alias("period_to")]
+      [datetime]$PeriodTo
    )
 
    if($mpan)
